@@ -20,6 +20,9 @@ public class MainActivity2 extends AppCompatActivity {
         Bundle bundle = RemoteInput.getResultsFromIntent(intent);
 
         if(bundle != null){
+            TextView textView = findViewById(R.id.textView);
+            String text = bundle.getString(MainActivity.KLUCZ);
+            textView.setText(text);
             NotificationManager notificationManager = (NotificationManager)  getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(MainActivity.id);
 

@@ -2,11 +2,14 @@ package com.example.powiadomienia;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+
+import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
@@ -55,7 +58,59 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        Button button1 = findViewById(R.id.button1);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+                String[] zdarzenia = {"Zdarzenie 1", "Zdarzenie 2", "Zdarzenie 3"};
+                for(String s: zdarzenia)
+                    inboxStyle.addLine(s);
+
+                Notification notification = new NotificationCompat.Builder(getBaseContext(), CHANNEL_ID)
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
+                        .setContentTitle("Powiadomienie")
+                        .setContentText("Wiadmość powiadomień")
+                        .setStyle(inboxStyle)
+                        .build();
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.notify(2, notification);
+            }
+        });
+
+        Button button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String odpowiedz = "tutaj wpisz swoja odpowiedz";
+                RemoteInput remoteInput = new RemoteInput.Builder(KLUCZ)
+                        .setLabel(odpowiedz)
+                        .build();
+                Intent intent = new Intent(getBaseContext(), MainActivity2.class);
+
+                PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0,
+                        intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                NotificationCompat.Action replayAction = new NotificationCompat.Action.Builder(
+                        android.R.drawable.ic_dialog_info, "Odpowiedz", pendingIntent)
+                        .addRemoteInput(remoteInput)
+                        .build();
+
+                Notification notification = new NotificationCompat.Builder(getBaseContext(), CHANNEL_ID)
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
+                        .setContentTitle("Powiadomienie")
+                        .setContentText("Treść powiadomienia")
+                        .addAction(replayAction)
+                        .build();
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(id, notification);
+            }
+        });
     }
+
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
